@@ -20,7 +20,7 @@
     "eslint": "8.30.0",
     "eslint-config-next": "13.1.1",
     "http-proxy": "^1.18.1",
-    "lucid-cardano": "^0.8.3",
+    "lucid-cardano": "^0.10.1",
     "next": "13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
