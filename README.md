@@ -12,6 +12,7 @@ Build Web3 applications on Cardano with [use-cardano](https://use-cardano.alanga
 ## run instructions
 
 set up your environment variables in `.env.local` or elsewhere in your system (see `.env.template`)
+``` and add blockforst api : BLOCKFROST_PROJECT_ID_PREPROD=preprod...```
 
 ```sh
 pnpm i && pnpm dev
