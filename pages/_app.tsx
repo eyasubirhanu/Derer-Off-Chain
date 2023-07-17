@@ -9,7 +9,7 @@ import { DefaultLayout } from "layouts/DefaultLayout"
 
 const options: UseCardanoOptions = {
   allowedNetworks: ["Testnet"],
-  testnetNetwork: "Preview",
+  testnetNetwork: "Preprod",
   node: {
     provider: "blockfrost-proxy",
     proxyUrl: "/api/blockfrost",
