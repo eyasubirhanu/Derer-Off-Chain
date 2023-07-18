@@ -1,4 +1,4 @@
-import { Lucid,MintingPolicy, PolicyId, Unit, fromText,Data,applyParamsToScript,Address} from "lucid-cardano"
+import { Lucid,MintingPolicy, getAddressDetails,PolicyId, Unit,UTxO,fromHex, Redeemer,fromText,Data,applyParamsToScript,Address, Constr} from "lucid-cardano"
 import scripts from "../assets/scripts.json";
 
 interface Options {
@@ -10,6 +10,7 @@ interface Options {
 const {Pool,NFT } = scripts;
 
 const getUnit = (policyId: PolicyId, name: string): Unit => policyId + fromText(name)
+
 const getUtxo = async (lucid:Lucid,address: string)=> {
     const utxos = await lucid!.utxosAt(address);
     const utxo = utxos[0];
@@ -30,12 +31,10 @@ const getPolicyId = (lucid: Lucid, mintingPolicy: MintingPolicy) => {
     const policyId: PolicyId = lucid.utils.mintingPolicyToId(mintingPolicy)
     return policyId
   }
-  
 
-const getFinalPolicy = async (lucid:Lucid,name:string)=> {
-    const wAddr = await lucid.wallet.address();
+const getFinalPolicy = async (lucid:Lucid,utxo:UTxO,name:string)=> {
     const tn = fromText(name);
-    const utxo = await getUtxo(lucid,wAddr);
+    // const utxo = await getUtxo(lucid,address);
     const Params = Data.Tuple([Data.Bytes(), Data.Integer(), Data.Bytes()]);
     type Params = Data.Static<typeof Params>;
     const nftPolicy: MintingPolicy = {
@@ -53,40 +52,39 @@ const getFinalPolicy = async (lucid:Lucid,name:string)=> {
 };
 
 // [nftPolicyIdHex, nftTokenNameHex, pkh]
-export const mintNFT = async ({ lucid, address, name }: Options) => {
-    const wAddr = await lucid.wallet.address();
-    console.log("minting NFT for " + wAddr);
-    if (wAddr) {
-        const utxo = await getUtxo(lucid,wAddr);
-        const { nftPolicy, unit } = await getFinalPolicy(lucid,name);
-        const tx = await lucid!
+export const mintNFT = async ({ lucid,address, name }: Options) => {
+    // const wAddr = await lucid.wallet.address();
+    console.log("minting NFT for " + address);
+    const utxo = await getUtxo(lucid,address);
+    const { nftPolicy, unit } = await getFinalPolicy(lucid,utxo,name);
+    const tx = await lucid
             .newTx()
-            .mintAssets({ [unit]: 1n }, Data.void())
+            .mintAssets({[unit]: 1n})
             .attachMintingPolicy(nftPolicy)
             .collectFrom([utxo])
             .complete();
-        const signedTx = await tx.sign().complete();
-        const txHash = await signedTx.submit();
-        return txHash;
-    }
-  }
+    const signedTx = await tx.sign().complete();
+    const txHash = await signedTx.submit();
+    return txHash;
+    
+  };
 
-export const burnNFT = async ({lucid,name}:Options) => {
-    const wAddr = await lucid.wallet.address();
-    console.log("minting NFT for " + wAddr);
-    if (wAddr) {
-        const { nftPolicy, unit } = await getFinalPolicy(lucid,name);
-        const policyId = getPolicyId(lucid, nftPolicy)
-        const utxo = await findUtxo(lucid, wAddr, policyId, name);
-        const tx = await lucid!
+export const burnNFT = async ({lucid,address,name}:Options) => {
+    // const wAddr = await lucid.wallet.address();
+    console.log("minting NFT for " + address); 
+    const utxo = await getUtxo(lucid,address);
+    const { nftPolicy, unit } = await getFinalPolicy(lucid,utxo,name);
+    const policyId = getPolicyId(lucid, nftPolicy)
+    const utxos = await findUtxo(lucid, address, policyId, name);
+    const tx = await lucid!
             .newTx()
-            .collectFrom(utxo)
-            .mintAssets({ [unit]: -1n }, Data.void())
+            .collectFrom([utxo])
+            .mintAssets({ [unit]: -1n })
             .attachMintingPolicy(nftPolicy)
-            .addSignerKey(wAddr)
+            .addSignerKey(address)
             .complete();
-        const signedTx = await tx.sign().complete();
-        const txHash = await signedTx.submit();
-        return txHash;
-    }
-};
+    const signedTx = await tx.sign().complete();
+    const txHash = await signedTx.submit();
+    return txHash;
+    };
+
