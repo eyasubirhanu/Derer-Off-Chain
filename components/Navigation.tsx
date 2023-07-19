@@ -15,7 +15,7 @@ export const Navigation = () => {
 
   const isHome = useMemo(() => asPath === "/", [asPath])
   const isTransact = useMemo(() => asPath === "/transact", [asPath])
-  const isSign = useMemo(() => asPath === "/sign", [asPath])
+  // const isSign = useMemo(() => asPath === "/sign", [asPath])
   const isMint = useMemo(() => asPath === "/mint", [asPath])
 
   return (
@@ -26,11 +26,11 @@ export const Navigation = () => {
         </Link>
 
         <Link href="/transact">
-          <button className={twMerge(className, isTransact && activeClassName)}>transact</button>
+          <button className={twMerge(className, isTransact && activeClassName)}>Market-Place</button>
         </Link>
 
         <Link href="/sign">
-          <button className={twMerge(className, isSign && activeClassName)}>Sign</button>
+          {/* <button className={twMerge(className, isSign && activeClassName)}>Sign</button> */}
         </Link>
 
         <Link href="/mint">
