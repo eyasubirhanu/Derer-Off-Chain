@@ -1,4 +1,4 @@
-import { utf8ToHex } from "lucid-cardano"
+import { fromText } from "lucid-cardano"
 import { useCallback, useMemo, useState } from "react"
 import { useCardano, utility } from "use-cardano"
 
@@ -24,7 +24,7 @@ export default function Sign() {
     setIsSigning(true)
 
     try {
-      const payload = utf8ToHex(message)
+      const payload = fromText(message)
 
       const signedMessage = await lucid.newMessage(address, payload).sign()
       const hasSigned: boolean = lucid.verifyMessage(address, payload, signedMessage)
