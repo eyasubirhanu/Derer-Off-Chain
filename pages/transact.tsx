@@ -24,14 +24,15 @@ export default function Transact() {
         style={inter.style}
         className="mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl"
       >
-        Transact
+        Market Place
       </h1>
 
       <div style={inter.style} className="my-4 text-center">
-        Using Lucid, we can easily send transactions on the Cardano blockchain.
+        List of Nfts
       </div>
-
-      <div className="text-left my-8">
+      </div>
+)}
+      {/* <div className="text-left my-8">
         <div className="my-4">
           <label className="flex flex-col w-100">
             <span className="text-sm lowercase mb-1">To Account</span>
@@ -90,4 +91,4 @@ export default function Transact() {
       </div>
     </div>
   )
-}
+} */}
