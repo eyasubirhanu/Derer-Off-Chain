@@ -19,16 +19,16 @@ export const Footer = () => {
 
   return (
     <footer className="p-4 md:px-6 md:py-8">
-      <div className="sm:flex sm:items-center sm:justify-between">
+      <div className="">
         <span className="block dark:hidden">
           <a href={companySiteUrl} className="flex items-center mb-4 sm:mb-0">
-            <Image src={Logo} width={200} height={22.2} alt="use-cardano Logo" />
+            {/* <Image src={Logo} width={200} height={22.2} alt="use-cardano Logo" /> */}
           </a>
         </span>
 
         <span className="hidden dark:block">
           <a href={companySiteUrl} className="flex items-center mb-4 sm:mb-0">
-            <Image src={LogoWhite} width={200} height={22.2} alt="use-cardano Logo" />
+            {/* <Image src={LogoWhite} width={200} height={22.2} alt="use-cardano Logo" /> */}
           </a>
         </span>
 
@@ -60,11 +60,11 @@ export const Footer = () => {
       </div>
       <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
       <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-        © 2022{" "}
+        {/* © 2022{" "} */}
         <a href={companySiteUrl} className="hover:underline">
-          use-cardano™
+          {/* use-cardano™ */}
         </a>
-        . All Rights Reserved.
+        {/* . All Rights Reserved. */}
       </span>
     </footer>
   )
