@@ -1,5 +1,7 @@
-import { Lucid,MintingPolicy, getAddressDetails,PolicyId, Unit,UTxO,fromHex, Redeemer,fromText,Data,applyParamsToScript,Address, Constr} from "lucid-cardano"
+import { Asset } from "@next/font/google";
+import { Lucid,MintingPolicy,Assets, getAddressDetails,PolicyId, Unit,UTxO, NFTMetadataDetails,fromText,Data,applyParamsToScript,Address, fromUnit} from "lucid-cardano"
 import scripts from "../assets/scripts.json";
+
 
 interface Options {
  lucid: Lucid
@@ -11,13 +13,15 @@ const {Pool,NFT } = scripts;
 
 const getUnit = (policyId: PolicyId, name: string): Unit => policyId + fromText(name)
 
+
 const getUtxo = async (lucid:Lucid,address: string)=> {
     const utxos = await lucid!.utxosAt(address);
     const utxo = utxos[0];
+    // lucid.utxoByUnit()
     return utxo;
 }; 
 
-const findUtxo = async (lucid:Lucid,addr: Address , nftId: PolicyId, name: string) => {
+export const findUtxo = async (lucid:Lucid,addr: Address , nftId: PolicyId, name: string) => {
     const utxos = await lucid.utxosAt(addr);
     console.log(await lucid.utxosAt(addr));
     const utxo = utxos.filter(
@@ -53,20 +57,31 @@ const getFinalPolicy = async (lucid:Lucid,utxo:UTxO,name:string)=> {
 
 // [nftPolicyIdHex, nftTokenNameHex, pkh]
 export const mintNFT = async ({ lucid,address, name }: Options) => {
-    // const wAddr = await lucid.wallet.address();
+    // const wAddr = await lucid.wallet.address()
+    const assetMetadata: NFTMetadataDetails = {
+      name: "https://www.gimbalabs.com/g.png",
+      image: "https://www.gimbalabs.com/g.png",
+    };
+    
     console.log("minting NFT for " + address);
     const utxo = await getUtxo(lucid,address);
+    const asset: Assets = {["d"]:1n}
+    const asst = asset
     const { nftPolicy, unit } = await getFinalPolicy(lucid,utxo,name);
+    const policyid = await getPolicyId(lucid,nftPolicy)
+    const hexname = await fromText(name) 
+    fromUnit(unit).policyId
     const tx = await lucid
             .newTx()
-            .mintAssets({[unit]: 1n})
+            .mintAssets({[unit]: 1n},Data.void())
             .attachMintingPolicy(nftPolicy)
+            .attachMetadata(1,assetMetadata)
             .collectFrom([utxo])
             .complete();
+            
     const signedTx = await tx.sign().complete();
     const txHash = await signedTx.submit();
-    return txHash;
-    
+    return {txHash,assetMetadata};
   };
 
 export const burnNFT = async ({lucid,address,name}:Options) => {
