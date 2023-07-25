@@ -59,7 +59,7 @@ const getFinalPolicy = async (lucid:Lucid,utxo:UTxO,name:string)=> {
 export const mintNFT = async ({ lucid,address, name }: Options) => {
     // const wAddr = await lucid.wallet.address()
     const assetMetadata: NFTMetadataDetails = {
-      name: "https://www.gimbalabs.com/g.png",
+      name: "tokenname",
       image: "https://www.gimbalabs.com/g.png",
     };
     
