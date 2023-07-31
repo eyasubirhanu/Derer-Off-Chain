@@ -1,8 +1,10 @@
 import { Asset } from "@next/font/google";
 import { Lucid,MintingPolicy,Assets, getAddressDetails,PolicyId, Unit,UTxO, NFTMetadataDetails,fromText,Data,applyParamsToScript,Address, fromUnit} from "lucid-cardano"
 import scripts from "../assets/scripts.json";
+import metadata from "../assets/metadata.json";
 import { sortBy } from "lodash"
 import { Responses } from '@blockfrost/blockfrost-js';
+import { MetadataJsonSchema, MetadataList } from "lucid-cardano/types/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib.generated";
 // https://www.npmjs.com/package/@blockfrost/blockfrost-js
 
 interface Options {
@@ -58,8 +60,12 @@ const getFinalPolicy = async (lucid:Lucid,utxo:UTxO,name:string)=> {
         ),
     };
     const policyId: PolicyId = lucid!.utils.mintingPolicyToId(nftPolicy);
+    
     const unit: Unit = policyId + tn;
+    console.log(policyId,"policy id");
     const mintaddress: Address = lucid.utils.validatorToAddress(nftPolicy);
+    
+    
     // const data =  await  lucid.utxosAt(mintaddress); from gimbalabs https://gitlab.com/gimbalabs/ppbl-2023/ppbl-front-end-template-2023/-/blob/main/src/data/queries/contributorQueries.tsx
  
     return { nftPolicy, unit };
@@ -75,6 +81,7 @@ export const mintNFT = async ({ lucid,address, name }: Options) => {
     
     console.log("minting NFT for " + address);
     const utxo = await getUtxo(lucid,address);
+    // const asset = utxo.assets.
     // const asset: Assets = {["d"]:1n}
     // const asst = asset
     const { nftPolicy, unit } = await getFinalPolicy(lucid,utxo,name);
@@ -85,7 +92,8 @@ export const mintNFT = async ({ lucid,address, name }: Options) => {
             .newTx()
             .mintAssets({[unit]: 1n},Data.void())
             .attachMintingPolicy(nftPolicy)
-            .attachMetadata(1,assetMetadata)
+            .attachMetadata(1,assetMetadata) // to attach on-chain metadata
+            .attachMetadata(721,metadata)  // attach metadata
             .collectFrom([utxo])
             .complete();
             
@@ -149,7 +157,8 @@ export const listAssets = async ({lucid,address,name}:Options) => {
       "metadata.name",
       "onchain_metadata.name"
     )
-  // console.log(utxoAssets,"mintadd");
+  
+  console.log(assetsWithMetadata,"mintadd");
   console.log(sortedAssets, "eyasumintadd");
   return {lovelaces,sortedAssets};
       };
