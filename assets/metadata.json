@@ -1,0 +1,12 @@
+
+{
+        "0f3cef01a059bb1f939842ecd6e751f215305c490db4a0ad224188d1": {
+          "NFT1": {
+            "description": "This is my first NFT thanks to the Cardano foundation",
+            "name": "Cardano foundation NFT guide token",
+            "id": 1,
+            "logo":["data:text/html;base64,"],
+            "image": "https://www.gimbalabs.com/g.png"
+          }
+        }
+}
