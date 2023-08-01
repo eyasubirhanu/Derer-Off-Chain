@@ -1,4 +1,6 @@
-import * as utils from "lib/mint-Nfts"
+import * as utils from "lib/mint-Nfts1"
+import * as pool from "lib/poolnfts"
+// import { useAssets } from "hooks/use-assets"
 import { useCallback, useMemo, useState,useEffect } from "react"
 import { useCardano, utility } from "use-cardano"
 
@@ -13,14 +15,28 @@ export default function Mint() {
 
   const [name, setName] = useState("")
   const [burnname, setBurnName] = useState("")
+  const [display, setDisplay]=useState(0n);
+
+  useEffect(() => {
+    const init = () => {
+      // const  lucid  = useCardano();
+      if (!lucid ) return;
+      // pool.displayNft(lucid, name).then((r) => setDisplay(r));
+    };
+    init();
+  },  [lucid,name]);
+
+
 
   const mintNFT = useCallback(async () => {
     try {
       if (!lucid || !account?.address || !name) return
-
+      // pool.displayNft(lucid, name).then((r) => setDisplay(r));
+      // const [named, setName] = useState("")
+      
       const nftTx = await utils.mintNFT({ lucid, address: account.address, name })
-
-      showToaster("Minted NFT", `Transaction: ${nftTx}`)
+      // const tokenimage = await nftTx.assetMetadata.image
+      showToaster("Minted NFT", `Transaction: ${nftTx.txHash}`)
     } catch (e) {
       if (utility.isError(e)) showToaster("Could not mint NFT", e.message)
       else if (typeof e === "string") showToaster("Could not mint NFT", e)
@@ -40,13 +56,32 @@ export default function Mint() {
     }
   }, [lucid, account?.address, showToaster, burnname])
 
+  const listNFT = useCallback(async () => {
+    try {
+      if (!lucid || !account?.address || !name) return
+
+      const nftTx = await utils.listAssets({ lucid, address: account?.address, name })
+
+      showToaster("Burned NFT", `Transaction: ${nftTx}`)
+    } catch (e) {
+      if (utility.isError(e)) showToaster("Could not burn NFT", e.message)
+      else if (typeof e === "string") showToaster("Could not burn NFT", e)
+    }
+  }, [lucid, account?.address, showToaster, burnname])
+
+
   const canMint = useMemo(() => lucid && account?.address && name, [lucid, account?.address, name])
 
 
   const canBurn = useMemo(() => lucid && account?.address && name, [lucid, account?.address, burnname])
 
+  const canList = useMemo(() => lucid && account?.address && name, [lucid, account?.address, burnname])
+
 return (
   <div className="text-center text-gray-900 dark:text-gray-100 ">
+    <div className="absolute right-40 rounded-xl bg-sky-800 py-2  hover:opacity-80 duration-200 disabled:opacity-30 w-40 text-white">
+             Total reserve of Ada ≈{Number(display)} ₳
+      </div>
     <h1
       style={inter.style}
       className="mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl py-2"
@@ -64,7 +99,7 @@ return (
       <div className="text-left my-8">
               <div className="my-4">
                 <label className="flex flex-col w-100">
-                  <span className="text-sm lowercase mb-1">NFT Name</span>
+                  <span className="text-sm lowercase mb-1 font-bold">NFT Name</span>
 
                   <input
                     className="rounded py-1 px-2 text-gray-800 border"
@@ -139,11 +174,11 @@ return (
               </div>
         </div>
         <button
-          disabled={!canMint}
+          disabled={!canList}
           className="border hover:bg-blue-800 text-white my-4 w-64 py-2 cursor-pointer transition-colors disabled:cursor-not-allowed disabled:text-gray-200 rounded bg-blue-300 disabled:bg-blue-600 dark:bg-white dark:text-gray-800 dark:disabled:bg-white dark:hover:bg-white font-bold uppercase"
           onClick={() => {
             hideToaster();
-            // mintNFT()
+            listNFT()
           }}
         >
           List
