@@ -1,4 +1,5 @@
 import { Lucid, MintingPolicy, PolicyId, TxHash, Unit, fromHex } from "lucid-cardano"
+import { Redeemer } from "lucid-cardano/types/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib.generated"
 
 interface Options {
   lucid: Lucid
@@ -26,7 +27,7 @@ const getPolicyId = (lucid: Lucid, mintingPolicy: MintingPolicy) => {
   return policyId
 }
 
-export const mintNFT = async ({ lucid, address, name }: Options): Promise<TxHash> => {
+export const mintNFT = async ({ lucid, address, name }: Options) => {
   const mintingPolicy = getMintingPolicy(lucid, address)
   const policyId = getPolicyId(lucid, mintingPolicy)
   const unit = getUnit(policyId, name)
@@ -61,3 +62,9 @@ export const burnNFT = async ({ lucid, address, name }: Options): Promise<TxHash
 
   return txHash
 }
+
+
+// ToDo 
+// nft mint and burn
+// using pool script sell Redeemer transfer nft to the market 
+// using buy buy nft from the pool
