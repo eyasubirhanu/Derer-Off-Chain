@@ -13,6 +13,10 @@ Build Web3 applications on Cardano with [use-cardano](https://use-cardano.alanga
 
 set up your environment variables in `.env.local` or elsewhere in your system (see `.env.template`)
 ``` and add blockforst api : BLOCKFROST_PROJECT_ID_PREPROD=preprod...```
+Listing assets``` https://github.com/GGAlanSmithee/cardano-lucid-blockfrost-proxy-example   ```
+Nft with metadata ``` https://github.com/blockfrost/blockfrost-js-examples/blob/master/examples/mint-nft/src/index.ts ```
+use-cardano Blockfrost Next Proxy API ``` https://socket.dev/npm/package/use-cardano-blockfrost-proxy```
+IPFS  ```https://blockfrost.dev/docs/start-building/ipfs/#adding-a-file```
 
 ```sh
 pnpm i && pnpm dev
