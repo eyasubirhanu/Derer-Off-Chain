@@ -4,6 +4,7 @@ import scripts from "../assets/scripts.json";
 import metadata from "../assets/metadata.json";
 import { sortBy } from "lodash"
 import { Responses } from '@blockfrost/blockfrost-js';
+import {  } from "use-cardano-blockfrost-proxy"
 import { MetadataJsonSchema, MetadataList } from "lucid-cardano/types/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib.generated";
 // https://www.npmjs.com/package/@blockfrost/blockfrost-js
 
@@ -70,6 +71,12 @@ const getFinalPolicy = async (lucid:Lucid,utxo:UTxO,name:string)=> {
  
     return { nftPolicy, unit };
 };
+// const IMAGE_PATH = './assets/logo.png';
+// const ipfsClient = new BlockFrostIPFS({
+//   projectId: "ipfsuwPRuQaISYnggAmqZV5i1zKH8otvB9ZR",
+// });
+
+
 
 // [nftPolicyIdHex, nftTokenNameHex, pkh]
 export const mintNFT = async ({ lucid,address, name }: Options) => {
@@ -78,6 +85,12 @@ export const mintNFT = async ({ lucid,address, name }: Options) => {
       name: "tokenname",
       image: "https://www.gimbalabs.com/g.png",
     };
+    // Upload image to IPFS
+    // const ipfsObject = await ipfsClient.add(IMAGE_PATH);
+    // const cid = ipfsObject.ipfs_hash;
+    // returns hash of the image
+
+    console.log(`Image uploaded to IPFS! Check it out https://ipfs.blockfrost.dev/ipfs/${cid}`);
     
     console.log("minting NFT for " + address);
     const utxo = await getUtxo(lucid,address);
@@ -120,48 +133,7 @@ export const burnNFT = async ({lucid,address,name}:Options) => {
     const txHash = await signedTx.submit();
     return txHash;
     };
-    
-export const listAssets = async ({lucid,address,name}:Options) => {
-  const utxos = await lucid.wallet.getUtxos()
-  const allUtxos = utxos
-  .map((u) => Object.keys(u.assets).map((key) => ({ key, value: u.assets[key] })))
-  .reduce((acc, curr) => [...acc, ...curr], [])
-  .map((a) => ({
-    ...fromUnit(a.key),
-    value: Number(a.value),
-  }))
-  const lovelaces = allUtxos
-    .filter((u) => u.policyId === "lovelace")
-    .reduce((acc, curr) => acc + curr.value, 0)
 
-  const utxoAssets = allUtxos
-    .filter((u) => u.policyId !== "lovelace")
-    .filter((v: Value): v is ValueWithName => v.name !== null)
-    .map((a) => ({
-      ...a,
-      fullyQualifiedAssetName: `${a.policyId}${a.name}`,
-    }))
-
-    const assetsWithMetadata: Responses["asset"][] = await Promise.all(
-      utxoAssets.map((a) =>
-        fetch(`/api/blockfrost/${"Preprod"}/assets/${a.fullyQualifiedAssetName}`).then((r) =>
-          r.json()
-        )
-      )
-    )
-
-  const sortedAssets = sortBy(
-    assetsWithMetadata,
-      (a) => (Number(a.quantity) === 1 ? 1 : -1),
-      "policy_id",
-      "metadata.name",
-      "onchain_metadata.name"
-    )
-  
-  console.log(assetsWithMetadata,"mintadd");
-  console.log(sortedAssets, "eyasumintadd");
-  return {lovelaces,sortedAssets};
-      };
       // https://github.com/GGAlanSmithee/cardano-lucid-blockfrost-proxy-example/blob/main/hooks/use-assets.ts
       // https://github.com/GGAlanSmithee/cardano-lucid-blockfrost-proxy-example/blob/main/pages/assets.tsx
       // https://gitlab.com/gimbalabs/ppbl-2023/ppbl-front-end-template-2023/-/blob/main/src/pages/contributors/index.tsx   or data.utxos.length
