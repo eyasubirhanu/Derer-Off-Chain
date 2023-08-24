@@ -1,94 +1,186 @@
-import { useTransaction } from "hooks/use-transaction"
-import { useEffect } from "react"
-import { useCardano } from "use-cardano"
+// import { listAssets } from "hooks/use-assets";
+// import { useCardano, utility } from "use-cardano";
+// import { isNil } from "lodash";
+// import { Inter } from "@next/font/google";
+// import styles from "../styles/index.module.css";
+// import { lovelaceToAda } from "lib/lovelace-to-ada";
 
-import { Inter } from "@next/font/google"
+// const inter = Inter({ subsets: ["latin"] });
+// const Index = () => {
+//   const { lucid, account, showToaster, hideToaster } = useCardano();
+//   const { lovelace, assets } = listAssets(lucid);
+//   return (
+//     <div className="text-center max-w-4xl m-auto text-gray-900 dark:text-gray-100">
+//       <h1
+//         style={inter.style}
+//         className="mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl"
+//       >
+//         Market Place
+//       </h1>
 
-const inter = Inter({ subsets: ["latin"] })
+//       <div style={inter.style} className="my-4 text-center">
+//         List of Nfts
+//       </div>
 
-export default function Transact() {
-  const { isValid, hideToaster, showToaster } = useCardano()
-  const tx = useTransaction()
+//       <div className={styles.container}>
+//         <h1 className={styles.title}>Listing Assets Example</h1>
 
-  useEffect(() => {
-    if (!tx.successMessage) {
-      hideToaster
-    } else {
-      showToaster("Success!", tx.successMessage)
-    }
-  }, [tx.successMessage, hideToaster, showToaster])
+//         {lovelace > 0 && <div>ADA: {lovelaceToAda(lovelace)}</div>}
+
+//         <div>
+//           <ul className={styles.list}>
+//             {assets.map((a) => {
+//               const name = a.metadata?.name || a.onchain_metadata?.name || "";
+
+//               return (
+//                 <li key={a.asset}>
+//                   <div>
+//                     {name}
+
+//                     {Number(a.quantity) > 1 &&
+//                       ` (${lovelaceToAda(
+//                         Number(a.quantity) /
+//                           Math.pow(10, a.metadata?.decimals || 0)
+//                       )})`}
+//                   </div>
+
+//                   {!isNil(a.metadata?.logo) && (
+//                     <div>
+//                       {/* eslint-disable-next-line @next/next/no-img-element */}
+//                       <img
+//                         width="64"
+//                         height="auto"
+//                         alt={`${name} logo`}
+//                         src={`data:image/png;base64,${a.metadata?.logo}`}
+//                       />
+//                     </div>
+//                   )}
+
+//                   {!isNil(a.onchain_metadata?.image) && (
+//                     <div>
+//                       {/* eslint-disable-next-line @next/next/no-img-element */}
+//                       <img
+//                         width="64"
+//                         height="auto"
+//                         alt={`${name} NFT`}
+//                         src={(a.onchain_metadata?.image as string).replace(
+//                           "ipfs://",
+//                           "https://ipfs.blockfrost.dev/ipfs/"
+//                         )}
+//                       />
+//                     </div>
+//                   )}
+//                 </li>
+//               );
+//             })}
+//           </ul>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Index;
+
+import { listAssets } from "hooks/use-assets";
+import { useCardano } from "use-cardano";
+import { isNil } from "lodash";
+import { Inter } from "@next/font/google";
+import styles from "../styles/index.module.css";
+import { lovelaceToAda } from "lib/lovelace-to-ada";
+
+const inter = Inter({ subsets: ["latin"] });
+
+const Index = () => {
+  const { lucid } = useCardano();
+  const { lovelace, assets } = listAssets(lucid);
 
   return (
-    <div className="text-center max-w-4xl m-auto text-gray-900 dark:text-gray-100">
-      <h1
-        style={inter.style}
-        className="mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl"
+    <div
+      className="text-center m-auto text-gray-900 dark:text-gray-100"
+      style={{
+        background: "linear-gradient(to bottom, #111A28, #05102D)",
+        minHeight: "100vh",
+        padding: "2rem",
+      }}
+    >
+      <div
+        className="max-w-6xl mx-auto"
+        style={{
+          background: "rgba(255, 255, 255, 0.05)",
+          padding: "2rem",
+          borderRadius: "0.5rem",
+          marginBottom: "2rem",
+        }}
       >
-        Market Place
-      </h1>
+        <h1
+          style={inter.style}
+          className="mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl text-white"
+        >
+          Welcome to the NFT Marketplace
+        </h1>
 
-      <div style={inter.style} className="my-4 text-center">
-        List of Nfts
-      </div>
-      </div>
-)}
-      {/* <div className="text-left my-8">
-        <div className="my-4">
-          <label className="flex flex-col w-100">
-            <span className="text-sm lowercase mb-1">To Account</span>
-
-            <input
-              className="rounded py-1 px-2 text-gray-800 border"
-              type="text"
-              placeholder="addr..."
-              value={tx.toAccount}
-              onChange={(e) => tx.setToAccount(e.target.value?.toString())}
-            />
-          </label>
+        <div className="my-4 text-center text-lg text-white">
+          Explore a collection of unique digital assets
         </div>
 
-        <div className="my-4">
-          <label className="flex flex-col w-40">
-            <span className="text-sm lowercase mb-1">Lovelace</span>
-
-            <input
-              className="rounded py-1 px-2 text-gray-800 border"
-              type="number"
-              min="0"
-              step="1000"
-              name="amount"
-              value={tx.lovelace}
-              onChange={(e) => tx.setLovelace(e.target.value?.toString())}
-            />
-          </label>
-        </div>
-
-        <div className="my-4">
-          <button
-            className="border hover:bg-blue-400 text-white my-4 w-40 py-2 cursor-pointer transition-colors disabled:cursor-not-allowed disabled:text-gray-200 rounded bg-blue-300 disabled:bg-blue-200 dark:bg-white dark:text-gray-800 dark:disabled:bg-white dark:hover:bg-white font-bold uppercase"
-            disabled={!tx.canTransact || !!tx.error}
-            onClick={tx.sendTransaction}
-          >
-            Send
-          </button>
-
-          <div className="italic">
-            {isValid === false ? (
-              <p>
-                <small>connect a wallet to send a transaction</small>
-              </p>
-            ) : !tx.successMessage && !tx.error && !tx.canTransact ? (
-              <p>
-                <small>specify a lovelace amount and account to send a transaction</small>
-              </p>
-            ) : tx.error ? (
-              <p>
-                <small>{tx.error.message}</small>
-              </p>
-            ) : null}
+        {lovelace > 0 && (
+          <div className="text-2xl font-semibold my-4 text-white">
+            Total ADA: {lovelaceToAda(lovelace)}
           </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {assets.map((a) => {
+            const name = a.metadata?.name || a.onchain_metadata?.name || "";
+            const description = a.metadata?.description || "";
+            const imageSrc =
+              a.onchain_metadata?.image?.replace(
+                "ipfs://",
+                "https://ipfs.blockfrost.dev/ipfs/"
+              ) || "";
+
+            return (
+              <div
+                key={a.asset}
+                className="nft-card bg-white shadow-lg p-5 rounded-lg"
+              >
+                {imageSrc && (
+                  <img
+                    src={imageSrc}
+                    alt={`${name} NFT`}
+                    className="rounded-lg mb-4"
+                  />
+                )}
+                <h3 className="text-xl font-bold mb-2">{name}</h3>
+                <p className="text-gray-600">{description}</p>
+                <div className="flex justify-between items-center mt-6">
+                  <span className="text-gray-500">$Price</span>
+                  <button className={`${styles.btn} ${styles.btnPrimary}`}>
+                    <span className={styles.btnIcon}>🛍️</span> Buy
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
+      </div>
+
+      <div className="flex justify-between">
+        {/* Small NFT box 1 */}
+        <div className="nft-card bg-white shadow-lg p-5 rounded-lg">
+          {/* NFT content */}
+        </div>
+
+        {/* Small NFT box 2 */}
+        <div className="nft-card bg-white shadow-lg p-5 rounded-lg">
+          {/* NFT content */}
+        </div>
+
+        {/* Add more small NFT boxes as needed */}
       </div>
     </div>
-  )
-} */}
+  );
+};
+
+export default Index;
