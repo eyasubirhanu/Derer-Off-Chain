@@ -84,7 +84,7 @@
 
 import { listAssets } from "hooks/use-assets";
 import { useCardano } from "use-cardano";
-import { isNil } from "lodash";
+// import { isNil } from "lodash";
 import { Inter } from "@next/font/google";
 import styles from "../styles/index.module.css";
 import { lovelaceToAda } from "lib/lovelace-to-ada";
