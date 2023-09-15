@@ -3,8 +3,10 @@ import {
   MintingPolicy,
   getAddressDetails,
   PolicyId,
+  Credential,
   PaymentKeyHash,
   Script,
+  Utils,
   Unit,
   UTxO,
   fromHex,
@@ -15,7 +17,9 @@ import {
   Address,
   Constr,
 } from "lucid-cardano";
+import { Nonce } from "lucid-cardano/types/src/core/libs/cardano_multiplatform_lib/cardano_multiplatform_lib.generated";
 import scripts from "../assets/scripts.json";
+import * as all from "./mint-Nfts1";
 // import * as utils from "lib/mint-Nfts"
 
 interface Options {
@@ -24,7 +28,7 @@ interface Options {
   name: string;
 }
 
-const { Pool, NFT } = scripts;
+const { Pool } = scripts;
 
 const poolScript: Script = {
   type: "PlutusV2",
@@ -46,26 +50,25 @@ interface d {
 }
 
 const b = {
-  aCurrency: "99c2e7b696e8c49c11c5d5c0bb0951d4571b9faeb5b8aa41ee0e6b40",
-  aToken: "45",
+  aCurrency: "d6a5f87e9bc65e87851cf047e1836db6992033a31f2f563fe86f219c",
+  aToken: "64",
   colOwner: "93377870bd1d96fd3c24b352e5cc7f088527c6d59e65d56afa190a5c",
   rate: 4n,
 };
 
 const datum = Data.to(b, PoolDatum);
 
-// const datumValue: d = Data.from(datum, PoolDatum);
-
-//  const datum = Data.to(b, PoolDatum);
-export const findUtxo = async (lucid: Lucid, addr: Address) => {
-  const unit: Unit =
-    "7f4de8356fa00f59dc09f3f467bdbe121add5b15513839a98645c2e76565";
-  const utxos = await lucid.utxosAtWithUnit(addr, unit);
-  console.log(await lucid.utxosAt(addr), "dd");
+export const findUtxo = async (
+  lucid: Lucid,
+  addr: Address,
+  nftId: PolicyId,
+  name: string
+) => {
+  const utxos = await lucid.utxosAt(addr);
   return utxos;
 };
+
 export const findPubKeyHash = async (lucid: Lucid, address: Address) => {
-  // const walletAddr = await lucid.wallet.address();
   const details = getAddressDetails(address);
   console.log(address, "eee");
 
@@ -99,45 +102,36 @@ export const listNFT = async ({ lucid, address, name }: Options) => {
   return txHash;
 };
 
-export const buyNFT = async (lucid: Lucid, policid: string, name: string) => {
+export const buyNFT = async ({ lucid, address, name }: Options) => {
   const unit: Unit = b.aCurrency + b.aToken;
   const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
-
+  const utxos = await findUtxo(lucid, poolAddress, b.aCurrency, b.aToken);
+  const utxo = utxos.filter((utxo) => utxo.assets[unit]);
+  const datumof = await lucid.datumOf(utxo[0]);
+  const unhashDatum: d = Data.from(datumof, PoolDatum);
+  const rate = unhashDatum.rate;
+  console.log(rate, "datum");
+  const addr: Address = await lucid.wallet.address();
+  const pkh = await findPubKeyHash(lucid, addr); // see how iohk ppp solve it
+  const owner = unhashDatum.colOwner;
+  console.log(owner, "bib1");
+  const ownerCredential: Credential = {
+    type: "Key", // Assuming "Key" is the correct type for a simple string hash
+    hash: owner, // Replace 'owner' with the actual string hash
+  };
+  const addrowner = lucid.utils.credentialToAddress(ownerCredential);
+  console.log(addrowner, "d");
   const tx = await lucid
     .newTx()
-    .payToContract(
-      poolAddress,
-      {
-        inline: datum,
-      },
-      { [unit]: BigInt(1) }
-    )
+    .collectFrom(utxo, Data.to(new Constr(1, [pkh])) as Redeemer)
+    .payToAddress(addr, { [unit]: BigInt(1) })
+    .payToAddress(addrowner, { lovelace: rate })
+    .attachSpendingValidator(poolScript)
     .complete();
   const signedTx = await tx.sign().complete();
   const txHash = await signedTx.submit();
   return txHash;
 };
-
-// export const displayNft  = async (lucid:Lucid,name:string) => {
-//   // const nftId:PolicyId =""
-//   const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
-//   console.log(poolAddress,"pool");
-//   const unit:Unit = ""
-
-//   const utxos = await findUtxo(lucid, poolAddress);
-//   // const ut = await lucid.utxoByUnit(unit)
-//   // const ut:Unit = "7f4de8356fa00f59dc09f3f467bdbe121add5b15513839a98645c2e76565"
-//   // const utxos = await lucid.utxoByUnit(ut)
-//   const asset = utxos.
-//   // console.log(asset,"assete");
-//   // const asset = utxos.
-
-//   return 2n;
-// };
-// 7f4de8356fa00f59dc09f3f467bdbe121add5b15513839a98645c2e76565
-// 35a26bdf9e5beedeb504effd17dc7787ec00e299eb64f03b40a536196464
-
-// To do went to search from the user wallet currency symbol and token name and display it in brawther
 
 export const findCs = async (lucid: Lucid, addr: Address) => {
   const unit: Unit = "";
