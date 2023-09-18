@@ -50,7 +50,7 @@ interface d {
 }
 
 const b = {
-  aCurrency: "d6a5f87e9bc65e87851cf047e1836db6992033a31f2f563fe86f219c",
+  aCurrency: "6b01893fc3577cc6642525d04f5a632b600e3ebe01aad8eade019494",
   aToken: "64",
   colOwner: "93377870bd1d96fd3c24b352e5cc7f088527c6d59e65d56afa190a5c",
   rate: 4n,
@@ -121,12 +121,15 @@ export const buyNFT = async ({ lucid, address, name }: Options) => {
   };
   const addrowner = lucid.utils.credentialToAddress(ownerCredential);
   console.log(addrowner, "d");
+  const testaddr: Address =
+    "addr_test1qqsdc4cd23v2kr0pdgg88jzc970phtngs6ryvjsrssumpdtu6feqh07nw3yvtwx47xa0a24hvkxmmntxmq639hphchesglw674";
   const tx = await lucid
     .newTx()
     .collectFrom(utxo, Data.to(new Constr(1, [pkh])) as Redeemer)
     .payToAddress(addr, { [unit]: BigInt(1) })
-    .payToAddress(addrowner, { lovelace: rate })
+    .payToAddress(addrowner, { lovelace: BigInt(1000000) })
     .attachSpendingValidator(poolScript)
+    .addSignerKey(pkh)
     .complete();
   const signedTx = await tx.sign().complete();
   const txHash = await signedTx.submit();
