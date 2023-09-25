@@ -1,15 +1,43 @@
 import { listAssets } from "hooks/use-assets";
-import { useCardano } from "use-cardano";
+import { useCardano, utility } from "use-cardano";
 // import { isNil } from "lodash";
 import { Inter } from "@next/font/google";
 import styles from "../styles/index.module.css";
 import { lovelaceToAda } from "lib/lovelace-to-ada";
+import { useCallback, useMemo, useState, useEffect } from "react";
+import * as pool from "lib/poolnfts";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const Index = () => {
+  const { account, showToaster, hideToaster } = useCardano();
+  const [name, setName] = useState("");
   const { lucid } = useCardano();
   const { lovelace, assets } = listAssets(lucid);
+
+  const MPbuyNFT = useCallback(
+    async (tokenname: string, tokenpolicyid: string) => {
+      try {
+        if (!lucid || !name) return;
+        // pool.displayNft(lucid, name).then((r) => setDisplay(r));
+        // const [named, setName] = useState("")
+
+        const buyTx = await pool.buyNFT({
+          lucid,
+          address: "",
+          name: tokenname,
+          policyid: tokenpolicyid,
+        });
+
+        // const tokenimage = await nftTx.assetMetadata.image
+        showToaster("Buy NFT", `Transaction: ${buyTx}`);
+      } catch (e) {
+        if (utility.isError(e)) showToaster("Could not mint NFT", e.message);
+        else if (typeof e === "string") showToaster("Could not mint NFT", e);
+      }
+    },
+    [lucid, showToaster, name]
+  );
 
   return (
     <div
@@ -72,7 +100,12 @@ const Index = () => {
                 <p className="text-gray-600">{description}</p>
                 <div className="flex justify-between items-center mt-6">
                   <span className="text-gray-500">$Price</span>
-                  <button className={`${styles.btn} ${styles.btnPrimary}`}>
+                  <button
+                    className={`${styles.btn} ${styles.btnPrimary}`}
+                    onClick={() => {
+                      MPbuyNFT(a.name, a.policyId);
+                    }}
+                  >
                     <span className={styles.btnIcon}>🛍️</span> Buy
                   </button>
                 </div>
