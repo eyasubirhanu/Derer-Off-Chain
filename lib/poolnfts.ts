@@ -26,11 +26,12 @@ interface Options {
   lucid: Lucid;
   address: string;
   name: string;
+  policyid: string;
 }
 
 const { Pool } = scripts;
 
-const poolScript: Script = {
+export const poolScript: Script = {
   type: "PlutusV2",
   script: Pool,
 };
@@ -71,7 +72,6 @@ export const findUtxo = async (
 export const findPubKeyHash = async (lucid: Lucid, address: Address) => {
   const details = getAddressDetails(address);
   console.log(address, "eee");
-
   if (!details) throw new Error("Spending script details not found");
   const pkh = details.paymentCredential?.hash;
   if (!pkh) throw new Error("Spending script utxo not found");
@@ -81,11 +81,9 @@ export const findPubKeyHash = async (lucid: Lucid, address: Address) => {
 export const listNFT = async ({ lucid, address, name }: Options) => {
   const unit: Unit = b.aCurrency + b.aToken;
   console.log(name);
-
   const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
   const pkh = await findPubKeyHash(lucid, address);
   console.log(pkh, "ddd");
-
   const tx = await lucid
     .newTx()
     .payToContract(
@@ -102,10 +100,11 @@ export const listNFT = async ({ lucid, address, name }: Options) => {
   return txHash;
 };
 
-export const buyNFT = async ({ lucid, address, name }: Options) => {
-  const unit: Unit = b.aCurrency + b.aToken;
+export const buyNFT = async ({ lucid, address, name, policyid }: Options) => {
+  // const unit: Unit = b.aCurrency + b.aToken;
+  const unit: Unit = policyid + name;
   const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
-  const utxos = await findUtxo(lucid, poolAddress, b.aCurrency, b.aToken);
+  const utxos = await findUtxo(lucid, poolAddress, policyid, name);
   const utxo = utxos.filter((utxo) => utxo.assets[unit]);
   const datumof = await lucid.datumOf(utxo[0]);
   const unhashDatum: d = Data.from(datumof, PoolDatum);
@@ -127,7 +126,7 @@ export const buyNFT = async ({ lucid, address, name }: Options) => {
     .newTx()
     .collectFrom(utxo, Data.to(new Constr(1, [pkh])) as Redeemer)
     .payToAddress(addr, { [unit]: BigInt(1) })
-    .payToAddress(addrowner, { lovelace: BigInt(1000000) })
+    .payToAddress(addrowner, { lovelace: BigInt(rate * 1000000n) })
     .attachSpendingValidator(poolScript)
     .addSignerKey(pkh)
     .complete();
@@ -135,6 +134,22 @@ export const buyNFT = async ({ lucid, address, name }: Options) => {
   const txHash = await signedTx.submit();
   return txHash;
 };
+
+export async function getDatumValue(
+  lucid: Lucid,
+  policyid: string,
+  name: string
+) {
+  // await wait(10000);
+
+  // const nftId: PolicyId = getPolicyId(lucid, nftPolicyScript);
+  const unit: Unit = policyid + name;
+  const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
+  const utxos = await findUtxo(lucid, poolAddress, policyid, name);
+  const datum = await lucid.datumOf(utxos[0]);
+  const datumValue: d = Data.from(datum, PoolDatum);
+  return datumValue.rate;
+}
 
 export const findCs = async (lucid: Lucid, addr: Address) => {
   const unit: Unit = "";
