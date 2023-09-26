@@ -3,7 +3,7 @@ import { useCardano } from "use-cardano";
 import { Inter } from "@next/font/google";
 import styles from "../styles/index.module.css";
 import { lovelaceToAda } from "lib/lovelace-to-ada";
-import { listAssets } from "hooks/use-assets";
+import { listAssets } from "hooks/use-assets2";
 
 const inter = Inter({ subsets: ["latin"] });
 
