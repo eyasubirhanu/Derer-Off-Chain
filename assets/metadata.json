@@ -1,12 +1,14 @@
 {
   "721": {
-    "0f3cef01a059bb1f939842ecd6e751f215305c490db4a0ad224188d1": {
-      "NFT1": {
-        "description": "This is my first NFT thanks to the Cardano foundation",
-        "name": "Cardano foundation NFT guide token",
-        "id": 1,
-        "image": "https://www.gimbalabs.com/g.png"
+    "05cf1f9c1e4cdcb6702ed2c978d55beff5e178b206b4ec7935d5e056": {
+      "100PPBL2023Malik Huzaifa": {
+        "image": "https://www.gimbalabs.com/g.png",
+        "name": "PPBL2023Malik Huzaifa"
+      },
+      "222PPBL2023Malik Huzaifa": {
+        "image": "https://www.gimbalabs.com/g.png",
+        "name": "PPBL2023Malik Huzaifa"
       }
     }
-}
+  }
 }
