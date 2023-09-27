@@ -8,12 +8,20 @@ import { lovelaceToAda } from "lib/lovelace-to-ada";
 
 const inter = Inter({ subsets: ["latin"] });
 
+// Define the type for the NFT object
+type NFT = {
+  imageSrc: string;
+  name: string;
+  description: string;
+  price: number;
+};
+
 const Index = () => {
   const { lucid, account, showToaster } = useCardano();
   const { lovelace, assets } = listAssets(lucid);
 
   const [priceInputs, setPriceInputs] = useState(Array(assets.length).fill(""));
-  const [listedNFTs, setListedNFTs] = useState([]);
+  const [listedNFTs, setListedNFTs] = useState<NFT[]>([]);
   const [isTransactionPending, setTransactionPending] = useState(false);
 
   const listNFT = async (asset: any, index: any) => {
@@ -149,24 +157,35 @@ const Index = () => {
         </div>
 
         <div className="flex justify-between mt-4">
-          {listedNFTs.map((nft, index) => (
-            <div
-              key={index}
-              className="nft-card bg-white shadow-lg p-5 rounded-lg"
-              style={{
-                background: "white",
-              }}
-            >
-              <img
-                src={nft.imageSrc}
-                alt={`${nft.name} NFT`}
-                className="rounded-lg mb-4"
-              />
-              <h3 className="text-xl font-bold mb-2">{nft.name}</h3>
-              <p className="text-gray-600">{nft.description}</p>
-              <p className="text-gray-500">Listed Price: ${nft.price}</p>
-            </div>
-          ))}
+          {listedNFTs.map((nft, index) => {
+            // Check if nft has the required properties
+            if (
+              "imageSrc" in nft &&
+              "name" in nft &&
+              "description" in nft &&
+              "price" in nft
+            ) {
+              return (
+                <div
+                  key={index}
+                  className="nft-card bg-white shadow-lg p-5 rounded-lg"
+                  style={{
+                    background: "white",
+                  }}
+                >
+                  <img
+                    src={nft.imageSrc}
+                    alt={`${nft.name} NFT`}
+                    className="rounded-lg mb-4"
+                  />
+                  <h3 className="text-xl font-bold mb-2">{nft.name}</h3>
+                  <p className="text-gray-600">{nft.description}</p>
+                  <p className="text-gray-500">Listed Price: ${nft.price}</p>
+                </div>
+              );
+            }
+            return null; // Handle cases where nft doesn't have the required properties
+          })}
         </div>
       </div>
     </div>
