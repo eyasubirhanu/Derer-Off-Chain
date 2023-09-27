@@ -27,6 +27,7 @@ interface Options {
   address: string;
   name: string;
   policyid: string;
+  price: bigint;
 }
 
 const { Pool } = scripts;
@@ -50,14 +51,14 @@ interface d {
   rate: bigint;
 }
 
-const b = {
-  aCurrency: "6b01893fc3577cc6642525d04f5a632b600e3ebe01aad8eade019494",
-  aToken: "64",
-  colOwner: "93377870bd1d96fd3c24b352e5cc7f088527c6d59e65d56afa190a5c",
-  rate: 4n,
-};
+// const b = {
+//   aCurrency: "d9edec2a157517fbe2cdcfee171740ebb3eaad88be43b7c7a7dc45ec",
+//   aToken: "6e6577",
+//   colOwner: "93377870bd1d96fd3c24b352e5cc7f088527c6d59e65d56afa190a5c",
+//   rate: 4n,
+// };
 
-const datum = Data.to(b, PoolDatum);
+// const datum = Data.to(b, PoolDatum);
 
 export const findUtxo = async (
   lucid: Lucid,
@@ -78,11 +79,28 @@ export const findPubKeyHash = async (lucid: Lucid, address: Address) => {
   return pkh;
 };
 
-export const listNFT = async ({ lucid, address, name }: Options) => {
-  const unit: Unit = b.aCurrency + b.aToken;
+export const listNFT = async ({
+  lucid,
+  address,
+  name,
+  policyid,
+  price,
+}: Options) => {
+  // const unit: Unit = b.aCurrency + b.aToken;
+  console.log(policyid, "haha");
+
+  const pkh = await findPubKeyHash(lucid, address);
+  const b = {
+    aCurrency: policyid,
+    aToken: name,
+    colOwner: pkh,
+    rate: BigInt(price),
+  };
+  const datum = Data.to(b, PoolDatum);
+  const unit: Unit = policyid + name;
   console.log(name);
   const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
-  const pkh = await findPubKeyHash(lucid, address);
+
   console.log(pkh, "ddd");
   const tx = await lucid
     .newTx()
