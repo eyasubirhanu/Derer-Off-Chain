@@ -1,4 +1,4 @@
-import { listAssets } from "hooks/use-assets";
+import { listAssets } from "hooks/use-assets-poolscript";
 import { useCardano, utility } from "use-cardano";
 import { Inter } from "@next/font/google";
 import styles from "../styles/index.module.css";
@@ -13,7 +13,7 @@ const Index = () => {
   const [rate, setRate] = useState(0n); // Initialize rate as 0n (bigint)
   const [isTransactionPending, setTransactionPending] = useState(false); // Flag to prevent multiple transactions
 
-  const fetchRate = async (asset) => {
+  const fetchRate = async (asset: any) => {
     try {
       if (!lucid || !asset) return;
 
@@ -39,7 +39,7 @@ const Index = () => {
     }
   };
 
-  const buyNFT = async (asset) => {
+  const buyNFT = async (asset: any) => {
     try {
       if (!lucid || !asset || isTransactionPending) return;
 
@@ -68,6 +68,7 @@ const Index = () => {
         address: "", // Replace with a valid address
         name: tokenname,
         policyid: policyIdd,
+        price: 0n,
       });
 
       showToaster("Buy NFT", `Transaction: ${buyTx}`);

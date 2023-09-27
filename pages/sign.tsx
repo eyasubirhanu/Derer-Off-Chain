@@ -1,34 +1,64 @@
-import React, { useState } from "react";
-import { useCardano } from "use-cardano";
+import React, { useState, useEffect } from "react";
+import { useCardano, utility } from "use-cardano";
 import { Inter } from "@next/font/google";
 import styles from "../styles/index.module.css";
+import * as pool from "lib/poolnfts"; // Import the poolnfts library
+import { listAssets } from "hooks/use-assets-users";
 import { lovelaceToAda } from "lib/lovelace-to-ada";
-import { listAssets } from "hooks/use-assets2";
 
 const inter = Inter({ subsets: ["latin"] });
 
 const Index = () => {
-  const { lucid } = useCardano();
+  const { lucid, account, showToaster } = useCardano();
   const { lovelace, assets } = listAssets(lucid);
 
   const [priceInputs, setPriceInputs] = useState(Array(assets.length).fill(""));
   const [listedNFTs, setListedNFTs] = useState([]);
+  const [isTransactionPending, setTransactionPending] = useState(false);
 
-  const listNFT = (index: number) => {
-    if (priceInputs[index] !== "") {
-      const newListedNFTs = [
-        ...listedNFTs,
-        { ...assets[index], price: priceInputs[index] },
-      ];
-      setListedNFTs(newListedNFTs);
+  const listNFT = async (asset: any, index: any) => {
+    try {
+      if (!lucid || !asset || !account?.address || isTransactionPending) return;
 
-      const newPriceInputs = [...priceInputs];
-      newPriceInputs[index] = ""; // Reset the price input after listing
-      setPriceInputs(newPriceInputs);
-    } else {
-      alert("Please enter a valid price.");
+      // Set the flag to prevent multiple transactions
+      setTransactionPending(true);
+
+      const {
+        metadata,
+        asset: { policyId },
+      } = asset;
+
+      const assetName = metadata?.name || asset.onchain_metadata?.name || "";
+      const policyIdd = asset.policy_id;
+      const tokenname = asset.asset_name;
+      const listTx = await pool.listNFT({
+        lucid,
+        address: account.address, // Replace with a valid address
+        name: tokenname, // Use the asset name directly
+        policyid: policyIdd, // Use the asset policy ID directly
+        price: priceInputs[index],
+      });
+
+      showToaster("Buy NFT", `Transaction: ${listTx}`);
+
+      // Reset the flag after the transaction is complete
+      setTransactionPending(false);
+    } catch (e) {
+      // Handle errors and reset the flag on error as well
+      setTransactionPending(false);
+
+      if (utility.isError(e)) showToaster("Could not buy NFT", e.message);
+      else if (typeof e === "string") showToaster("Could not buy NFT", e);
     }
+    // setListedNFTs(newListedNFTs);
   };
+
+  useEffect(() => {
+    // Fetch the rate for the first asset when the component mounts
+    if (assets.length > 0) {
+      // You can choose to fetch the rate here if needed
+    }
+  }, [assets, lucid, showToaster]);
 
   return (
     <div
@@ -68,7 +98,7 @@ const Index = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {assets.map((a, index) => {
             const name = a.metadata?.name || a.onchain_metadata?.name || "";
-            const tokenname = a.name;
+            const tokenName = a.name;
             const description = a.metadata?.description || "";
             const imageSrc =
               a.onchain_metadata?.image?.replace(
@@ -92,7 +122,7 @@ const Index = () => {
                   />
                 )}
                 <h3 className="text-xl font-bold mb-2">{name}</h3>
-                <h3 className="text-xl font-bold mb-2">{tokenname}</h3>
+                <h3 className="text-xl font-bold mb-2">{tokenName}</h3>
                 <p className="text-gray-600">{description}</p>
                 <div className="flex justify-between items-center mt-6">
                   <input
@@ -107,7 +137,7 @@ const Index = () => {
                     className="border rounded-lg px-2 py-1 w-20 focus:outline-none focus:border-blue-400"
                   />
                   <button
-                    onClick={() => listNFT(index)}
+                    onClick={() => listNFT(a, index)}
                     className={`${styles.btn} ${styles.btnPrimary}`}
                   >
                     <span className={styles.btnIcon}>📝</span> List
@@ -142,5 +172,4 @@ const Index = () => {
     </div>
   );
 };
-
 export default Index;
