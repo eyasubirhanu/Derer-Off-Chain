@@ -100,30 +100,20 @@ const getFinalPolicy = async (lucid: Lucid, utxo: UTxO, name: string) => {
 // const { BlockFrostIPFS } = require("@blockfrost/blockfrost-js");
 
 // [nftPolicyIdHex, nftTokenNameHex, pkh]
-export const mintNFT = async ({ lucid, address, name }: Options) => {
+export const mintNFT = async (
+  { lucid, address, name }: Options,
+  image: string,
+  description: string
+) => {
   // const wAddr = await lucid.wallet.address()
   const assetMetadata: NFTMetadataDetails = {
-    description: "my token is good token",
-    name: "tokenname",
-    image: "https://www.gimbalabs.com/g.png",
+    description: description,
+    name: name,
+    image: image,
   };
-  // Upload image to IPFS
-  // const ipfsObject = await ipfsClient.add(IMAGE_PATH);
-  // const cid = ipfsObject.ipfs_hash;
-  // returns hash of the image
-
-  // console.log(
-  //   `Image uploaded to IPFS! Check it out https://ipfs.blockfrost.dev/ipfs/${cid}`
-  // );
-
   console.log("minting NFT for " + address);
   const utxo = await getUtxo(lucid, address);
-  // const asset = utxo.assets.
-  // const asset: Assets = {["d"]:1n}
-  // const asst = asset
   const { nftPolicy, unit } = await getFinalPolicy(lucid, utxo, name);
-  // const policyid = await getPolicyId(lucid,nftPolicy)
-  // const hexname = await fromText(name)
   fromUnit(unit).policyId;
   const tx = await lucid
     .newTx()
@@ -133,11 +123,26 @@ export const mintNFT = async ({ lucid, address, name }: Options) => {
     // .attachMetadata(721, metadata) // attach metadata
     .collectFrom([utxo])
     .complete();
-
   const signedTx = await tx.sign().complete();
   const txHash = await signedTx.submit();
   return { txHash, assetMetadata };
 };
+
+// Upload image to IPFS
+// const ipfsObject = await ipfsClient.add(IMAGE_PATH);
+// const cid = ipfsObject.ipfs_hash;
+// returns hash of the image
+
+// console.log(
+//   `Image uploaded to IPFS! Check it out https://ipfs.blockfrost.dev/ipfs/${cid}`
+// );
+
+// lucid,
+// address: account.address,
+// name,
+// image: imageUrl, // Pass image URL as a property
+// description,
+// image: "https://www.gimbalabs.com/g.png",
 
 export const burnNFT = async ({ lucid, address, name }: Options) => {
   // const wAddr = await lucid.wallet.address();
