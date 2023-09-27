@@ -1,0 +1,4 @@
+curl "https://ipfs.blockfrost.io/api/v0/ipfs/add" \
+  -X POST \
+  -H "project_id:ipfsuwPRuQaISYnggAmqZV5i1zKH8otvB9ZR" \
+  -F "file=@./logo.png"
