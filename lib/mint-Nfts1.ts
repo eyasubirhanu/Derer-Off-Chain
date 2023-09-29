@@ -16,6 +16,7 @@ import {
 } from "lucid-cardano";
 import scripts from "../assets/scripts.json";
 import metadata from "../assets/metadata.json";
+import { Asset } from "@next/font/google";
 // import { sortBy } from "lodash"
 // import { Responses } from "@blockfrost/blockfrost-js";
 // import {} from "use-cardano-blockfrost-proxy";
@@ -106,27 +107,62 @@ export const mintNFT = async (
   description: string
 ) => {
   // const wAddr = await lucid.wallet.address()
-  const assetMetadata: NFTMetadataDetails = {
-    description: description,
-    name: name,
-    image: image,
-  };
+  // const assetMetadata: NFTMetadataDetails = {
+  //   description: description,
+  //   name: name,
+  //   image: image,
+  // };
+
   console.log("minting NFT for " + address);
   const utxo = await getUtxo(lucid, address);
   const { nftPolicy, unit } = await getFinalPolicy(lucid, utxo, name);
-  fromUnit(unit).policyId;
+  // fromUnit(unit).policyId;
+  const policy = fromUnit(unit).policyId;
+  // const metadata = {
+  //   [policy]: {
+  //     name: {
+  //       description: [description],
+  //       files: [
+  //         {
+  //           mediaType: "image/png",
+  //           name: name,
+  //           src: image,
+  //         },
+  //       ],
+  //       image: image,
+  //       mediaType: "image/png",
+  //       name: name,
+  //     },
+  //   },
+  //   version: "1.0",
+  // };
+
+  const metadata = {
+    [policy]: {
+      [name]: {
+        image: image,
+        name: name,
+        description: description,
+      },
+    },
+  };
+
   const tx = await lucid
     .newTx()
     .mintAssets({ [unit]: 1n }, Data.void())
     .attachMintingPolicy(nftPolicy)
-    .attachMetadata(721, assetMetadata) // to attach on-chain metadata
+    .attachMetadata(721, metadata) // to attach on-chain metadata
     // .attachMetadata(721, metadata) // attach metadata
     .collectFrom([utxo])
     .complete();
   const signedTx = await tx.sign().complete();
   const txHash = await signedTx.submit();
-  return { txHash, assetMetadata };
+  return { txHash };
 };
+
+// ABout metadata
+//https:gitlab.com/gimbalabs/ppbl-2023/ppbl-front-end-template-2023/-/blob/main/src/components/course-modules/100/ContributorMinter/ContributorPairMintingComponent.tsx
+// https://cardano.stackexchange.com/questions/11334/how-to-format-metadata-for-lucid
 
 // Upload image to IPFS
 // const ipfsObject = await ipfsClient.add(IMAGE_PATH);
