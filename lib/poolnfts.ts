@@ -60,16 +60,6 @@ interface d {
 
 // const datum = Data.to(b, PoolDatum);
 
-export const findUtxo = async (
-  lucid: Lucid,
-  addr: Address,
-  nftId: PolicyId,
-  name: string
-) => {
-  const utxos = await lucid.utxosAt(addr);
-  return utxos;
-};
-
 export const findPubKeyHash = async (lucid: Lucid, address: Address) => {
   const details = getAddressDetails(address);
   console.log(address, "eee");
@@ -122,7 +112,7 @@ export const buyNFT = async ({ lucid, address, name, policyid }: Options) => {
   // const unit: Unit = b.aCurrency + b.aToken;
   const unit: Unit = policyid + name;
   const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
-  const utxos = await findUtxo(lucid, poolAddress, policyid, name);
+  const utxos = await lucid.utxosAt(poolAddress);
   const utxo = utxos.filter((utxo) => utxo.assets[unit]);
   const datumof = await lucid.datumOf(utxo[0]);
   const unhashDatum: d = Data.from(datumof, PoolDatum);
@@ -163,8 +153,9 @@ export async function getDatumValue(
   // const nftId: PolicyId = getPolicyId(lucid, nftPolicyScript);
   const unit: Unit = policyid + name;
   const poolAddress: Address = lucid.utils.validatorToAddress(poolScript);
-  const utxos = await findUtxo(lucid, poolAddress, policyid, name);
-  const datum = await lucid.datumOf(utxos[0]);
+  const utxos = await lucid.utxosAt(poolAddress);
+  const utxo = utxos.filter((utxo) => utxo.assets[unit]);
+  const datum = await lucid.datumOf(utxo[0]);
   const datumValue: d = Data.from(datum, PoolDatum);
   return datumValue.rate;
 }
