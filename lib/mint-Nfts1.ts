@@ -7,7 +7,7 @@ import {
   PolicyId,
   Unit,
   UTxO,
-  NFTMetadataDetails,
+  // NFTMetadataDetails,
   fromText,
   Data,
   applyParamsToScript,
@@ -19,7 +19,8 @@ import metadata from "../assets/metadata.json";
 import { Asset } from "@next/font/google";
 // import { sortBy } from "lodash"
 // import { Responses } from "@blockfrost/blockfrost-js";
-// import {} from "use-cardano-blockfrost-proxy";
+import { blockfrostProxy } from "use-cardano-blockfrost-proxy";
+import FormData from "form-data";
 // import {
 //   MetadataJsonSchema,
 //   MetadataList,
@@ -93,7 +94,7 @@ const getFinalPolicy = async (lucid: Lucid, utxo: UTxO, name: string) => {
 
   return { nftPolicy, unit };
 };
-// const IMAGE_PATH = './assets/logo.png';
+
 // const ipfsClient = new BlockFrostIPFS({
 //   projectId: "ipfsuwPRuQaISYnggAmqZV5i1zKH8otvB9ZR",
 // });
@@ -112,6 +113,41 @@ export const mintNFT = async (
   //   name: name,
   //   image: image,
   // };
+
+  // const IMAGE_PATH = "../assets/avatar.png";
+  // const PROJECT_ID = "ipfsuwPRuQaISYnggAmqZV5i1zKH8otvB9ZR"; // Replace with your actual project ID
+  // // const formData = new FormData(IMAGE_PATH);
+  // // formData.append("file", fs.createReadStream(IMAGE_PATH));
+
+  // // Create a FormData object and append the file
+  // const formData = new FormData();
+  // formData.append(
+  //   "file",
+  //   fetch(IMAGE_PATH).then((response) => response.body),
+  //   { filename: "avatar.png" }
+  // );
+
+  // // Define the API endpoint and headers
+  // const apiUrl = "https://ipfs.blockfrost.io/api/v0/ipfs/add";
+  // const headers = {
+  //   project_id: PROJECT_ID,
+  //   ...formData.getHeaders(),
+  // };
+
+  // Make the POST request
+  // const response = await fetch(apiUrl, {
+  //   method: "POST",
+  //   headers: headers,
+  //   body: formData,
+  // });
+  // console.log(response);
+
+  // if (!response.ok) {
+  //   throw new Error(`Request failed with status: ${response.status}`);
+  // }
+
+  // const responseData = await response.json();
+  // console.log("Response:", responseData);
 
   console.log("minting NFT for " + address);
   const utxo = await getUtxo(lucid, address);
@@ -165,13 +201,15 @@ export const mintNFT = async (
 // https://cardano.stackexchange.com/questions/11334/how-to-format-metadata-for-lucid
 
 // Upload image to IPFS
-// const ipfsObject = await ipfsClient.add(IMAGE_PATH);
+// const ipfsObject = await blockfrostProxy.add(IMAGE_PATH);
 // const cid = ipfsObject.ipfs_hash;
 // returns hash of the image
 
 // console.log(
 //   `Image uploaded to IPFS! Check it out https://ipfs.blockfrost.dev/ipfs/${cid}`
 // );
+
+// Fetch asset metadata for each asset in utxoAssets
 
 // lucid,
 // address: account.address,

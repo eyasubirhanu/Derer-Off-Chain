@@ -13,6 +13,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@blockfrost/blockfrost-js": "^5.4.0",
     "@next/font": "13.1.1",
     "@types/node": "18.11.18",
     "@types/react": "18.0.26",
@@ -37,5 +38,8 @@
     "open-cli": "^7.1.0",
     "postcss": "^8.4.20",
     "tailwindcss": "^3.2.4"
-  }
+  },
+  "main": "index.js",
+  "repository": "git@github.com:eyasubirhanu/Derer-Off-Chain.git",
+  "author": "eyasubirhanu <eyasubirhanu0@gmail.com>"
 }
