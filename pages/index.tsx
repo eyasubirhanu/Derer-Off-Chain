@@ -29,7 +29,7 @@ const Home = () => {
         access, can be overcome by developing a mobile-friendly platform and
         providing alternative forms of payment options accessible to the
         Ethiopian market. By addressing these limitations, DERER can build a
-        pioneering platform for Ethiopia's NFT community and tap into new
+        pioneering platform for Ethiopias NFT community and tap into new
         markets. Derer NFT Marketplace uses{" "}
         <a
           className="underline underline-offset-2"
