@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import { Lucid, fromUnit, Address } from "lucid-cardano";
 import { sortBy } from "lodash";
 import { useCallback, useEffect, useState } from "react";

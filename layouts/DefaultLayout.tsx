@@ -3,6 +3,7 @@ import { Navigation } from "components/Navigation"
 import Head from "next/head"
 import { PropsWithChildren } from "react"
 
+
 export const DefaultLayout = ({ children }: PropsWithChildren<{}>) => {
   return (
     <>
@@ -17,13 +18,21 @@ export const DefaultLayout = ({ children }: PropsWithChildren<{}>) => {
         <link rel="icon" href="/favicon.svg" />
       </Head>
 
-      <div className="container mx-auto px-4">
-        <Navigation />
+      <div className="px-4 w-full">
+  <Navigation />
 
-        <main className="min-h-[calc(100vh-295px)] pt-12">{children}</main>
+  <main
+    className="min-h-[calc(100vh-295px)] pt-12 rounded-lg mt-5 w-full"
+    style={{
+      background: 'linear-gradient(to bottom, #001f3f, #0d47a1)' // Adjust colors as needed
+    }}
+  >
+    {children}
+  </main>
 
-        <Footer />
-      </div>
+  <Footer />
+</div>
+
     </>
   )
 }
