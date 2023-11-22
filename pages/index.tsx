@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CommandLineIcon } from "components/icons/CommandLineIcon";
 import { Inter } from "@next/font/google";
 import { FiArrowRight } from "react-icons/fi";
+import { Headers } from "../components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 // Define the type for the props
@@ -13,6 +14,7 @@ type NFTCardProps = {
   description: string;
   price: string;
 };
+
 const NFTCard: React.FC<NFTCardProps> = ({ slide, title, description, price }) => (
   <>
     <img
@@ -70,12 +72,13 @@ const Home = () => {
   };
   return (
     <>
+      <Headers></Headers>
       <motion.div
         initial={{ opacity: 0, x: -100 }} // Animate from left to right
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.8 }}
-        className="flex flex-wrap w-full text-center mt-20 text-white dark:text-gray-100"
+        className="flex flex-wrap w-full text-center mt-28 text-white dark:text-gray-100"
       >
         <motion.div
           initial={{ opacity: 0, x: -100 }}
