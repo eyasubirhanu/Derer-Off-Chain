@@ -7,6 +7,7 @@ import { FaGem } from 'react-icons/fa';
 
 import { Inter } from "@next/font/google";
 import { motion } from "framer-motion";
+import { Headers } from "../components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -49,9 +50,10 @@ export default function Mint() {
 
   return (
     <div className="text-center text-gray-900 dark:text-gray-100 ">
+      <Headers></Headers>
       <h1
         style={inter.style}
-        className="mb-4 text-4xl  text-white font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl py-2"
+        className="mb-4 text-4xl mt-24 text-white font-extrabold tracking-tight leading-none md:text-5xl lg:text-6xl py-2"
       >
         Derer Nft MarketPlace
       </h1>
